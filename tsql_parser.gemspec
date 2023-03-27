@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
     s.name        = "tsql_parser"
-    s.version     = "0.0.2"
+    s.version     = "0.0.3"
     s.summary     = "A very light-weight and opinionated T-SQL parser and formatter."
     s.description = "A very light-weight and opinionated T-SQL parser and formatter."
     s.authors     = ["Scott Stauffer"]

@@ -34,7 +34,7 @@ module TSqlParser::Parsing
           parts = line.strip.split(" SET ")
           tab_count = self.get_tab_count(line, tab)
           formatted << "#{tab * tab_count}#{parts[0]}\n"
-          parts[1..].each {|p| formatted << "#{tab * tab_count}SET #{p}" }
+          parts[1..].each { |p| formatted << "#{tab * tab_count}SET #{p}" }
         else
           formatted << line
         end
@@ -159,24 +159,24 @@ module TSqlParser::Parsing
     def self.format_set(s, tab_count = 0, tab = "    ")
       return s if s.nil?
       parts = []
-      builder = ''
+      builder = ""
       parenthesis = 0
-      s.split('').each do |c|
-        parenthesis += 1 if c == '('
-        parenthesis -= 1 if c == ')'
-        if c == ','
+      s.split("").each do |c|
+        parenthesis += 1 if c == "("
+        parenthesis -= 1 if c == ")"
+        if c == ","
           if parenthesis > 0
             builder << c
           else
             parts << builder
-            builder = ''
+            builder = ""
           end
         else
           builder << c
         end
       end
       parts << builder unless builder.empty?
-      "\n#{parts.map {|p| "#{tab * (tab_count + 1)}#{p.strip}"}.join(",\n")}"
+      "\n#{parts.map { |p| "#{tab * (tab_count + 1)}#{p.strip}" }.join(",\n")}"
     end
 
     def self.format_update(s, tab_count = 0, tab = "    ")

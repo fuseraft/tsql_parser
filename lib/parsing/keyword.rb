@@ -25,7 +25,7 @@ module TSqlParser::Parsing
 
     def self.get_new_node_keywords
       %w[CREATE ALTER DROP RENAME SELECT INSERT UPDATE DELETE WHILE IF ELSE DECLARE SET WITH BEGIN FROM WHERE INNER LEFT JOIN END GO GROUP ORDER CASE PRINT RETURN] \
-        - %w[WHERE SET]
+        - %w[WHERE SET WITH]
     end
 
     def self.get_begin_keyword
@@ -45,7 +45,7 @@ module TSqlParser::Parsing
     end
 
     def self.get_newline_keywords
-      %w[INSERT UPDATE DELETE SELECT SET DECLARE CREATE FROM INNER FULL OUTER LEFT RIGHT CROSS JOIN IF BEGIN END RETURN WHERE PRINT GROUP ORDER WHILE]
+      %w[INSERT UPDATE DELETE SELECT CREATE IF RETURN PRINT WHILE]
     end
 
     def self.get_reserved_keywords

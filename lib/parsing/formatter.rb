@@ -48,7 +48,7 @@ module TSqlParser::Parsing
           new_lines << ""
           next
         end
-        if %w[IF RETURN INSERT DELETE WHILE].include? first or first.start_with? "/*"
+        if Parser.is_newline_required? first or first.start_with? "/*"
           new_lines << ""
         end
         new_lines << line
@@ -64,7 +64,7 @@ module TSqlParser::Parsing
       end
       sub_one = false
       work_lines = work_lines.flatten
-      last = ''
+      last = ""
       work_lines.each_with_index do |line, index|
         first = line.strip.split(" ").first
 
@@ -74,7 +74,7 @@ module TSqlParser::Parsing
         elsif %w[END GO FROM].include? first and last != "DELETE"
           tab_count -= 1 if tab_count > 0
           indented_lines << "#{tab * tab_count}#{line}"
-        elsif %w[IF].include? first 
+        elsif %w[IF].include? first
           indented_lines << "#{tab * tab_count}#{line}"
           next_line = work_lines[index + 1] unless index + 1 > work_lines.size
           sub_one = true unless next_line.start_with? "BEGIN"
