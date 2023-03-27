@@ -1,6 +1,12 @@
 # tsql_parser
 A very light-weight and opinionated T-SQL parser and formatter.
 
+## Installation
+
+```
+gem install tsql_parser
+```
+
 ## Methods
 
 `TSqlParser#parse`

@@ -157,6 +157,7 @@ module TSqlParser::Parsing
     private
 
     def self.format_set(s, tab_count = 0, tab = "    ")
+      return s if s.nil?
       parts = []
       builder = ''
       parenthesis = 0
@@ -179,6 +180,7 @@ module TSqlParser::Parsing
     end
 
     def self.format_update(s, tab_count = 0, tab = "    ")
+      return s if s.nil?
       formatted = []
       parts = s.split(" SET ")
       table = parts[0]
@@ -190,6 +192,7 @@ module TSqlParser::Parsing
     end
 
     def self.format_insert(s, tab_count = 0, tab = "    ")
+      return s if s.nil?
       formatted = []
       if s.include? ") VALUES ("
         tokens = s.split(") VALUES (")
@@ -205,11 +208,14 @@ module TSqlParser::Parsing
     end
 
     def self.format_select(s, tab_count = 0, tab = "    ")
+      return s if s.nil?
+
       tokens = s.split(", ")
       "\n#{tokens.map { |t| "#{tab * (tab_count + 1)}#{t}" }.join(",\n")}"
     end
 
     def self.format_predicate(s, tab_count = 0, tab = "    ")
+      return s if s.nil?
       indented = []
       formatted = []
       builder = []
