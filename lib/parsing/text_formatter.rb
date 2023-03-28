@@ -195,7 +195,11 @@ module TSqlParser::Parsing
         formatted << "\n#{tab * (tab_count + 1)}#{table}"
         formatted << "#{tab * (tab_count + 2)}(#{columns})"
         formatted << "#{tab * (tab_count + 1)}VALUES"
-        formatted << "#{tab * (tab_count + 2)}(#{values})"
+        if s.end_with? ");"
+          formatted << "#{tab * (tab_count + 2)}(#{values}"
+        else
+          formatted << "#{tab * (tab_count + 2)}(#{values})"
+        end
       end
       formatted.join("\n") unless formatted.empty?
     end
