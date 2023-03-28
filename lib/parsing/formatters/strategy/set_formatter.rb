@@ -55,7 +55,7 @@ module TSqlParser::Parsing::Formatters
             formatted << line
             formatted << ""
           end
-        elsif first != "SET" and line.include? " SET "
+        elsif first != "SET" and line.include? " SET " and not line.strip.start_with? "--"
           parts = line.strip.split(" SET ")
           tab_count = self.get_tab_count(line, tab)
           formatted << "#{tab * tab_count}#{parts[0]}\n"
