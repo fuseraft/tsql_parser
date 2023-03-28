@@ -17,7 +17,7 @@
 module TSqlParser::Parsing
   require_relative "iterator"
   require_relative "parser"
-  require_relative "text_formatter"
+  require_relative "formatters/text_formatter"
   require_relative "model/sql_container"
   require_relative "model/flat_sql_container"
 
