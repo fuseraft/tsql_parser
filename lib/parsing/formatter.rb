@@ -78,13 +78,21 @@ module TSqlParser::Parsing
         next_line = work_lines[index + 1] unless index + 1 > work_lines.size
         next_line_first = next_line.strip.split(" ").first unless next_line.nil?
 
+        if first.nil?
+          #tab_count -= 1 if tab_count > 0
+          next
+        end
+
         if Parser.is_label? first
           indented_lines << "#{tab * tab_count}#{line}"
-          tab_count += 1
+          #tab_count += 1
         elsif %w[CASE BEGIN SELECT].include? first or line.strip.start_with? "CREATE PROCEDURE"
           indented_lines << "#{tab * tab_count}#{line}"
           tab_count += 1
-        elsif %w[FROM END GO].include? first and not %w[DELETE UPDATE INSERT SET].include? last
+        elsif %w[FROM GO].include? first and not %w[DELETE UPDATE INSERT FROM FETCH].include? last
+          tab_count -= 1 if tab_count > 0
+          indented_lines << "#{tab * tab_count}#{line}"
+        elsif %w[END END;].include? first
           tab_count -= 1 if tab_count > 0
           indented_lines << "#{tab * tab_count}#{line}"
         else
