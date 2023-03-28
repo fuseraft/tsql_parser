@@ -23,8 +23,13 @@ module TSqlParser::Parsing::Formatters
       lines = text.split("\n")
       wait = false
       set_lines = []
+      special_set_keywords = %w[ANSI_DEFAULTS ANSI_NULL_DFLT_OFF ANSI_NULL_DFLT_ON ANSI_NULLS ANSI_PADDING ANSI_WARNINGS ARITHABORT ARITHIGNORE CONCAT_NULL_YIELDS_NULL CURSOR_CLOSE_ON_COMMIT DATEFIRST DATEFORMAT DEADLOCK_PRIORITY FIPS_FLAGGER FMTONLY FORCEPLAN IDENTITY_INSERT IMPLICIT_TRANSACTIONS LANGUAGE LOCK_TIMEOUT NOCOUNT NOEXEC NUMERIC_ROUNDABORT OFFSETS PARSEONLY QUERY_GOVERNOR_COST_LIMIT QUOTED_IDENTIFIER REMOTE_PROC_TRANSACTIONS ROWCOUNT SHOWPLAN_ALL SHOWPLAN_TEXT SHOWPLAN_XML STATISTICS TEXTSIZE TRANSACTION XACT_ABORT]
+
       lines.each do |line|
-        first = line.strip.split(" ").first
+        tokens = line.strip.split(" ")
+        first = tokens.first
+        next_token = tokens[1] if tokens.size > 1
+
         if %w[FROM WHERE].include? first and wait
           wait = false
           tab_count = self.get_tab_count(line, tab)
@@ -42,9 +47,14 @@ module TSqlParser::Parsing::Formatters
           next
         end
 
-        if first == "SET" and not line.strip.start_with? "SET @" and not %w[ON OFF].include? line.strip.split(" ").last
-          wait = true
-          set_lines << line
+        if first == "SET" and not line.strip.start_with? "SET @"
+          if not next_token.nil? and not special_set_keywords.include? next_token
+            wait = true
+            set_lines << line
+          else
+            formatted << line
+            formatted << ""
+          end
         elsif first != "SET" and line.include? " SET "
           parts = line.strip.split(" SET ")
           tab_count = self.get_tab_count(line, tab)

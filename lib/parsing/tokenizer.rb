@@ -94,7 +94,7 @@ module TSqlParser::Parsing
           next
         end
 
-        if Parser.is_comment_start?(c, next_c)
+        if Parser.is_comment_start?(c, next_c) and not comment
           comment = true
           skip_count = 1
           specific_tokens << builder unless builder.empty?
