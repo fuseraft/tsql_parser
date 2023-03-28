@@ -2,3 +2,4 @@ app.rb
 data.sql
 *.gem
 data/*.sql
+notes.txt
