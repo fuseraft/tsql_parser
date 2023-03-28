@@ -21,6 +21,17 @@ module TSqlParser::Parsing
       @nodes = []
     end
 
+    def self.combine(first, second)
+      token = {}
+      token[:value] = "#{first[:value]} #{second[:value]}"
+      [first, second].each do |t|
+        t.each do |k, v|
+          token[k] = v unless token.has_key? k
+        end
+      end
+      SqlContainer.new(token)
+    end
+
     def set_token(token)
       @token = token
     end

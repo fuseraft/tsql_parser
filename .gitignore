@@ -1,3 +1,4 @@
 app.rb
 data.sql
 *.gem
+data/*.sql

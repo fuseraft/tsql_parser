@@ -138,8 +138,16 @@ module TSqlParser::Parsing
       Keyword.get_new_node_keywords.include? s.upcase
     end
 
+    def self.is_new_node_composite?(s, next_s)
+      ["INNER JOIN", "LEFT JOIN", "RIGHT JOIN", "ELSE IF"].include? "#{s} #{next_s}"
+    end
+
     def self.is_terminator?(s)
       s == ";"
+    end
+
+    def self.is_label?(s)
+      s.end_with? ":"
     end
   end
 end

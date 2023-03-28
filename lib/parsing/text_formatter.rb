@@ -181,12 +181,7 @@ module TSqlParser::Parsing
 
     def self.format_update(s, tab_count = 0, tab = "    ")
       return s if s.nil?
-      formatted = []
-      parts = s.split(" SET ")
-      table = parts[0]
-      formatted << "\n#{tab * (tab_count + 1)}#{table}"
-      formatted << "#{tab * tab_count}SET #{parts[1]}"
-      formatted.join("\n")
+      "\n#{tab * (tab_count + 1)}#{s}"
     end
 
     def self.format_insert(s, tab_count = 0, tab = "    ")

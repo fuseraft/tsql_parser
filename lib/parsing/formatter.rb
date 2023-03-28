@@ -48,9 +48,16 @@ module TSqlParser::Parsing
           new_lines << ""
           next
         end
+
         if Parser.is_newline_required? first or first.start_with? "/*"
           new_lines << ""
         end
+        
+        if Parser.is_label? first
+          #tab_count = self.get_tab_count(line)
+          # TODO: tab it out
+        end
+
         new_lines << line
       end
       new_lines
@@ -71,10 +78,13 @@ module TSqlParser::Parsing
         next_line = work_lines[index + 1] unless index + 1 > work_lines.size
         next_line_first = next_line.strip.split(" ").first unless next_line.nil?
 
-        if %w[CASE BEGIN SELECT].include? first or line.strip.start_with? "CREATE PROCEDURE"
+        if Parser.is_label? first
           indented_lines << "#{tab * tab_count}#{line}"
           tab_count += 1
-        elsif %w[FROM END GO].include? first and not %w[DELETE UPDATE INSERT].include? last
+        elsif %w[CASE BEGIN SELECT].include? first or line.strip.start_with? "CREATE PROCEDURE"
+          indented_lines << "#{tab * tab_count}#{line}"
+          tab_count += 1
+        elsif %w[FROM END GO].include? first and not %w[DELETE UPDATE INSERT SET].include? last
           tab_count -= 1 if tab_count > 0
           indented_lines << "#{tab * tab_count}#{line}"
         else
@@ -128,8 +138,26 @@ module TSqlParser::Parsing
     def self.as_containers(tokens)
       containers = []
       container = nil
-      tokens.each do |t|
+      skip_count = 0
+      tokens.each_with_index do |t, index|
+        if skip_count > 0
+          skip_count -= 1
+          next
+        end
+
+        next_token = tokens[index + 1]
         if Parser.is_new_node_keyword? t[:value]
+          if not next_token.nil? and Parser.is_new_node_keyword? next_token[:value]
+            if Parser.is_new_node_composite?(t[:value], next_token[:value])
+              containers << container unless container.nil?
+              container = SqlContainer.combine(t, next_token)
+              skip_count = 1
+              next
+            end
+          end
+          containers << container unless container.nil?
+          container = SqlContainer.new(t)
+        elsif t[:label]
           containers << container unless container.nil?
           container = SqlContainer.new(t)
         else
