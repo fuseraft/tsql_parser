@@ -184,10 +184,8 @@ module TSqlParser::Parsing
       formatted = []
       parts = s.split(" SET ")
       table = parts[0]
-      where_parts = parts[1].split(" WHERE ")
       formatted << "\n#{tab * (tab_count + 1)}#{table}"
-      formatted << "#{tab * tab_count}SET #{where_parts[0]}"
-      formatted << "#{tab * tab_count}WHERE #{where_parts[1]}" if where_parts.size > 0
+      formatted << "#{tab * tab_count}SET #{parts[1]}"
       formatted.join("\n")
     end
 

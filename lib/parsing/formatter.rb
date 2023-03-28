@@ -36,6 +36,7 @@ module TSqlParser::Parsing
       text = TextFormatter.format_selects(text, tab)
       text = TextFormatter.format_sets(text, tab)
       text
+      puts text
     end
 
     private
@@ -65,29 +66,25 @@ module TSqlParser::Parsing
       sub_one = false
       work_lines = work_lines.flatten
       last = ""
+      in_if_exists = false
       work_lines.each_with_index do |line, index|
         first = line.strip.split(" ").first
+        next_line = work_lines[index + 1] unless index + 1 > work_lines.size
+        next_line_first = next_line.strip.split(" ").first unless next_line.nil?
 
         if %w[CASE BEGIN SELECT].include? first or line.strip.start_with? "CREATE PROCEDURE"
           indented_lines << "#{tab * tab_count}#{line}"
           tab_count += 1
-        elsif %w[END GO FROM].include? first and last != "DELETE"
+        elsif %w[FROM END GO].include? first and not %w[DELETE UPDATE INSERT].include? last
           tab_count -= 1 if tab_count > 0
           indented_lines << "#{tab * tab_count}#{line}"
-        elsif %w[IF].include? first
-          indented_lines << "#{tab * tab_count}#{line}"
-          next_line = work_lines[index + 1] unless index + 1 > work_lines.size
-          sub_one = true unless next_line.start_with? "BEGIN"
-          tab_count += 1 if sub_one
-          last = first
-          next
         else
           indented_lines << "#{tab * tab_count}#{line}"
         end
 
         if sub_one
           sub_one = false
-          tab_count -= 1
+          tab_count -= 1 if tab_count > 0
         end
         last = first
       end
