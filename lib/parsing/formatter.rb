@@ -36,7 +36,6 @@ module TSqlParser::Parsing
       text = TextFormatter.format_selects(text, tab)
       text = TextFormatter.format_sets(text, tab)
       text
-      puts text
     end
 
     private
