@@ -107,8 +107,8 @@ module TSqlParser::Parsing::Formatters
             builder = ""
           end
         elsif c == "\n"
-          parts << builder unless builder.empty?
-          builder = ""
+          #parts << builder unless builder.empty?
+          #builder = ""
         elsif c == "-"
           if next_c == "-"
             comment = true
@@ -124,7 +124,7 @@ module TSqlParser::Parsing::Formatters
       end
       parts << builder unless builder.empty?
       parts = parts.map { |p| p.strip }.select { |p| not p.empty? }
-      "\n#{parts.map { |p| "#{tab * (tab_count + 1)}#{p.strip}" }.join(",\n")}"
+      "\n#{parts.map { |p| "#{tab * (tab_count + 1)}#{p.strip.gsub(tab, " ")}" }.join(",\n")}"
     end
   end
 end
