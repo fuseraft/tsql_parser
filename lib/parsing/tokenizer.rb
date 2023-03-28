@@ -106,7 +106,6 @@ module TSqlParser::Parsing
           builder << c
           next
         elsif comment and c == "\n"
-          puts "comment builder: #{builder}"
           specific_tokens << builder unless builder.empty?
           builder = ""
           comment = false
