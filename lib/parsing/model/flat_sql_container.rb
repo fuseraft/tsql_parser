@@ -18,12 +18,16 @@ module TSqlParser::Parsing
   class FlatSqlContainer
     def initialize(token = nil)
       @token = token
-      @children = []
       @siblings = []
 
       unless token.nil?
         if token.has_nodes?
           token.get_nodes.each do |n|
+            if n.get_token[:comment]
+              comment_token = n.get_token
+              comment_token[:value] = "#{comment_token[:value]}\n"
+              n.set_token comment_token
+            end
             @siblings << n
           end
         end
@@ -46,24 +50,12 @@ module TSqlParser::Parsing
       @siblings << token
     end
 
-    def add_child(token)
-      @children << SqlContainer.new(token)
-    end
-
     def has_siblings?
       @siblings.size > 0
     end
 
-    def has_children?
-      @children.size > 0
-    end
-
     def get_siblings
       @siblings
-    end
-
-    def get_children
-      @children
     end
 
     def get_token

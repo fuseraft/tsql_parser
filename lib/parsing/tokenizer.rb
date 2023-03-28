@@ -102,6 +102,17 @@ module TSqlParser::Parsing
           next
         end
 
+        if comment and c != "\n"
+          builder << c
+          next
+        elsif comment and c == "\n"
+          puts "comment builder: #{builder}"
+          specific_tokens << builder unless builder.empty?
+          builder = ""
+          comment = false
+          next
+        end
+
         if c == "'" and not multiline_comment and not comment
           if not string
             string = true
@@ -125,17 +136,7 @@ module TSqlParser::Parsing
           next
         end
 
-        if comment and c != "\n"
-          builder << c
-          next
-        elsif comment and c == "\n"
-          specific_tokens << builder unless builder.empty?
-          builder = ""
-          comment = false
-          next
-        end
-
-        if delimiters.include? c and !multiline_comment and !string
+        if delimiters.include? c and !multiline_comment and !string and !comment
           specific_tokens << builder unless builder.empty?
           specific_tokens << c unless skip_delimiters.include? c
           builder = ""
