@@ -13,9 +13,11 @@ gem install tsql_parser
 There are two methods on `TSqlParser` and those are: `TSqlParser#parse` and `TSqlParser#format`.
 
 **parse(sql) → hash_array**
+
 Parses a T-SQL string and returns a hash array containing metadata about the tokens.
 
 **format(sql, tab_count = 0, tab = "    ") → formatted_sql_string**
+
 Parses and formats a T-SQL string. The default tab count is `0` and the default tab string is four white-space characters.
 
 ## Usage
