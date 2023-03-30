@@ -15,16 +15,13 @@
 #   TSqlParser::Parsing::Formatter
 
 module TSqlParser::Parsing
-  require_relative "iterator"
   require_relative "parser"
   require_relative "formatters/text_formatter"
-  require_relative "model/sql_container"
-  require_relative "model/flat_sql_container"
-
+  require_relative "transformers/token_transformer"
+  
   class Formatter
     def self.format(tokens, tab_count = 0, tab = "    ")
-      containers = self.as_containers(tokens)
-      lines = self.combine_containers(containers)
+      lines = TokenTransformer.transform(tokens)
       lines = self.cleanup_whitespace(lines)
       lines = self.insert_indentation(lines, tab_count, tab)
       lines = self.insert_newlines(lines)
@@ -114,66 +111,6 @@ module TSqlParser::Parsing
         lines << self.safe_ws_cleanup(c)
       end
       lines
-    end
-
-    def self.combine_containers(containers)
-      lines = []
-      containers.each do |c|
-        ct = c.get_token
-
-        builder = []
-        builder << ct[:value]
-
-        if c.has_siblings?
-          c.get_siblings.each do |sibling|
-            st = sibling.get_token
-
-            if st[:comment]
-              builder << "\n#{st[:value]}"
-              next
-            end
-
-            builder << st[:value]
-          end
-        end
-
-        lines << builder.join(" ")
-      end
-
-      lines
-    end
-
-    def self.as_containers(tokens)
-      containers = []
-      container = nil
-      skip_count = 0
-      tokens.each_with_index do |t, index|
-        if skip_count > 0
-          skip_count -= 1
-          next
-        end
-
-        next_token = tokens[index + 1]
-        if Parser.is_new_node_keyword? t[:value]
-          if not next_token.nil? and Parser.is_new_node_keyword? next_token[:value]
-            if Parser.is_new_node_composite?(t[:value], next_token[:value])
-              containers << container unless container.nil?
-              container = SqlContainer.combine(t, next_token)
-              skip_count = 1
-              next
-            end
-          end
-          containers << container unless container.nil?
-          container = SqlContainer.new(t)
-        elsif t[:label]
-          containers << container unless container.nil?
-          container = SqlContainer.new(t)
-        else
-          container.add t unless container.nil?
-        end
-      end
-      containers << container unless container.nil?
-      FlatSqlContainer.flatten_containers(containers)
     end
 
     def self.safe_ws_cleanup(line)
