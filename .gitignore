@@ -1,5 +1,5 @@
-app.rb
 *.gem
-data/*.sql
-output/*.sql
 *.txt
+output/*.sql
+data/**/*.sql
+app.rb
