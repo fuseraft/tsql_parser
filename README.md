@@ -10,22 +10,22 @@ The parser implementation rolls its own lexical analysis and tokenization instea
 
 Contributions welcome! Please submit any issues you discover and if you want to fix something, please fork and submit a pull request!
 
-# Installation
+### Installation
 
-## Terminal
+#### Terminal
 
 ```bash
 $ gem install tsql_parser
 ```
 
-## Gemfile
+#### Gemfile
 
 ```ruby
 source "https://rubygems.org"
 gem "tsql_parser", "~> 0.1.8"
 ```
 
-# Example Usage
+#### Example Usage
 
 Here is an example of printing formatted T-SQL to the terminal.
 ```ruby
@@ -37,59 +37,57 @@ tsql = File.read(file)
 puts TSqlParser.format(tsql)
 ```
 
-# TSqlParser
+### TSqlParser Methods
 
 This is the facade for working with the library.
 
-## Methods
-
-### `TSqlParser#parse(sql) → hash_array`
+**`TSqlParser#parse(sql) → hash_array`**
 
 - Parses a T-SQL string and returns a hash array containing metadata about the tokens.
 
-### `TSqlParser#format(sql, tab_count = 0, tab = "    ") → formatted_sql_string`
+**`TSqlParser#format(sql, tab_count = 0, tab = "    ") → formatted_sql_string`**
 
-- Parses and formats a T-SQL string. The default tab count is `0` and the default tab string is four white-space characters.
+- Parses and formats a T-SQL string. 
+- The default tab count is `0`.
+- The default tab string is four white-space characters.
 
-# TSqlParser::Parsing::Tokenizer
+### TSqlParser::Parsing::Tokenizer Methods
 
-## Tokenizer Methods
-
-### `Tokenizer#tokenize(tsql_string) → hash_array`
+**`Tokenizer#tokenize(tsql_string) → hash_array`**
 
 - Tokenizes a T-SQL string into a hash array of tokens.
 
-# Configuration
+### Configuration
 
 I'm still building out the configurability of the tokenization, parsing, and formatter.
 
-### `Defaults#set_default_tab_count(tab_count = 0)`
+**`Defaults#set_default_tab_count(tab_count = 0)`**
 
 - Sets the default tab count to use during formatting.
 
-### `Defaults#set_default_tab(tab = "    ")`
+**`Defaults#set_default_tab(tab = "    ")`**
 
 - Sets the default tab string to use during formatting.
 
-### `Defaults#set_default_single_char_tokens(delim_array=[])`
+**`Defaults#set_default_single_char_tokens(delim_array=[])`**
 
 - Sets the list of recognized character tokens.
 
-#### Example
+**Example**
 ```ruby
 TSqlParser::Parsing::Defaults.set_default_single_char_tokens ["(", ",", ")", "=", "+", "-", "%", "/", "*", "<", "!", ">", "'", "[", "]", ";"]
 ```
 
-### `Defaults#set_default_delimiters(delim_array=[])`
+**`Defaults#set_default_delimiters(delim_array=[])`**
 
 * Sets the list of token-separators.
 
-#### Example
+**Example**
 ```ruby
 TSqlParser::Parsing::Defaults.set_default_delimiters [" ", "\n", "\t"]
 ```
 
-# Contributions
+## Contributions
 
 I would love contributions from the open-source community. 
 
