@@ -26,6 +26,7 @@ module TSqlParser::Parsing
             when SET then Formatters::SetFormatter.new
             when UPDATE then Formatters::UpdateFormatter.new
             when WHERE then Formatters::WhereFormatter.new
+            when FROM then Formatters::FromFormatter.new
             end
         end
     end

@@ -25,6 +25,7 @@ module TSqlParser::Parsing
 
     def basic_tokenize(tsql_string)
       self.reset
+      tsql_string = tsql_string.gsub("\t", Defaults.get_default_tab)
       tsql_chars = tsql_string.split("")
 
       tsql_chars.each_with_index do |c, i|
@@ -64,7 +65,7 @@ module TSqlParser::Parsing
     def handle_multicomment_start
       if Parser.is_multiline_comment_start?(@c, @next_c)
         @multiline_comment = true
-        self.flush_builder(c)
+        self.flush_builder(@c)
         return true
       end
     end

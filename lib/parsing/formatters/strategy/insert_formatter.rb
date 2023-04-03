@@ -24,6 +24,7 @@ module TSqlParser::Parsing::Formatters
       search = "INSERT INTO"
       lines.each do |line|
         first = line.strip.split(" ").first
+        next if first.nil?
         if first != "INSERT"
           formatted << line
           next

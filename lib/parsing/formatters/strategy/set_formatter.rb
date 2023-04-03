@@ -28,6 +28,7 @@ module TSqlParser::Parsing::Formatters
       lines.each do |line|
         tokens = line.strip.split(" ")
         first = tokens.first
+        next if first.nil?
         next_token = tokens[1] if tokens.size > 1
 
         if %w[FROM WHERE].include? first and wait
@@ -59,7 +60,7 @@ module TSqlParser::Parsing::Formatters
           parts = line.strip.split(" SET ")
           tab_count = self.get_tab_count(line, tab)
           formatted << "#{tab * tab_count}#{parts[0]}\n"
-          parts[1..].each { |p| formatted << "#{tab * tab_count}SET #{p}" }
+          parts[1..].each { |p| formatted << "#{tab * tab_count}SET #{self.format_set(p, tab_count, tab)}" }
         elsif wait
           set_lines << line
         else

@@ -20,6 +20,7 @@ module TSqlParser::Parsing
   require_relative "select_formatter"
   require_relative "update_formatter"
   require_relative "where_formatter"
+  require_relative "from_formatter"
 
   CTE = 0
   INSERT = 1
@@ -28,4 +29,5 @@ module TSqlParser::Parsing
   SET = 4
   UPDATE = 5
   WHERE = 6
+  FROM = 7
 end
