@@ -2,6 +2,14 @@
 
 A very light-weight and opinionated T-SQL parser and formatter.
 
+The **`tsql_parser`** library can be used to format gnarly/headache-inducing T-SQL stored procedure code (> 1000 LoC) into easy to understand T-SQL. 
+
+It can also be used to tokenize a T-SQL string and produce a hash array containing metadata about each token in the T-SQL string.
+
+The parser implementation rolls its own lexical analysis and tokenization instead of leaning on generators like Lex, YACC, or Bison.
+
+Contributions welcome! Please submit any issues you discover and if you want to fix something, please fork and submit a pull request!
+
 # Installation
 
 ## Terminal
@@ -73,7 +81,7 @@ TSqlParser::Parsing::Tokenizer.set_default_skip_delimiters []
 # Default: [" ", "\n", "\t"]
 ```
 
-## Contributions
+# Contributions
 
 I would love contributions from the open-source community. 
 
