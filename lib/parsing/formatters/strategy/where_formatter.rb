@@ -22,19 +22,27 @@ module TSqlParser::Parsing::Formatters
       formatted = []
       text.split("\n").each do |line|
         first = line.strip.split(" ").first
-        if first != "WHERE"
+        next if first.nil?
+        if not line.include? "WHERE"
           formatted << line
           next
         end
 
+        if line.strip.start_with? "--" or line.strip.start_with? "/*" or line.strip.end_with? "'"
+          formatted << line
+          next
+        end
+
+        where_clause = line[line.index(" WHERE ")..].strip
+
         tab_count = self.get_tab_count(line, tab)
-        predicate = line.strip[first.size + 1..]
+        predicate = where_clause.strip["WHERE".size + 1..]
         new_predicate = self.format_predicate(predicate, tab_count, tab)
         if new_predicate.nil?
           formatted << line
           next
         end
-        formatted << line.sub(predicate, new_predicate)
+        formatted << line.sub("WHERE", "").sub(predicate, "\n#{tab * tab_count}WHERE#{new_predicate}")
       end
 
       formatted.join("\n")

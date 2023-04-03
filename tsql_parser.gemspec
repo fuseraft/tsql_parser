@@ -1,8 +1,8 @@
 Gem::Specification.new do |s|
     s.name        = "tsql_parser"
-    s.version     = "0.1.7"
+    s.version     = "0.1.8"
     s.summary     = "A very light-weight and opinionated T-SQL parser and formatter."
-    s.description = "A very light-weight and opinionated T-SQL parser and formatter. Github has the most recent docs."
+    s.description = "A very light-weight and opinionated T-SQL parser and formatter.\nGithub has the most recent docs.\nContributions welcome!"
     s.authors     = ["Scott Stauffer"]
     s.email       = "scott@fuseraft.com"
     s.files       = Dir['lib/**/*.rb']

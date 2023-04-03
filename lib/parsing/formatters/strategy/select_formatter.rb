@@ -23,6 +23,8 @@ module TSqlParser::Parsing::Formatters
       lines = text.split("\n")
       lines.each do |line|
         first = line.strip.split(" ").first
+        next if first.nil?
+
         if first != "SELECT"
           formatted << line
           next
@@ -45,8 +47,31 @@ module TSqlParser::Parsing::Formatters
     def format_select(s, tab_count = Defaults.get_default_tab_count, tab = Defaults.get_default_tab)
       return s if s.nil?
 
-      tokens = s.split(", ")
-      "\n#{tokens.map { |t| "#{tab * (tab_count + 1)}#{t}" }.join(",\n")}"
+      new_tokens = []
+      parenthesis = 0
+      builder = ""
+      skip_count = 0
+      s.split("").each do |c|
+        parenthesis += 1 if c == "("
+        parenthesis -= 1 if c == ")"
+
+        if skip_count > 0
+          skip_count -= 1
+          next
+        end
+
+        if c == "," and parenthesis == 0
+          new_tokens << builder unless builder.empty?
+          builder = ""
+          skip_count = 1
+        else
+          builder += c
+        end
+      end
+
+      new_tokens << builder unless builder.empty?
+
+      "\n#{new_tokens.map { |t| "#{tab * (tab_count + 1)}#{t}" }.join(",\n")}"
     end
   end
 end

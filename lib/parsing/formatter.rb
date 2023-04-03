@@ -25,14 +25,15 @@ module TSqlParser::Parsing
       lines = TokenTransformer.transform(tokens)
       lines = self.cleanup_whitespace(lines)
       lines = self.insert_indentation(lines, tab_count, tab)
-      #lines = self.insert_newlines(lines)
       text = lines.join("\n")
-      text = TextFormatter.new(JOIN, text, tab).format
-      text = TextFormatter.new(INSERT, text, tab).format
-      text = TextFormatter.new(UPDATE, text, tab).format
-      text = TextFormatter.new(WHERE, text, tab).format
-      text = TextFormatter.new(SELECT, text, tab).format
-      text = TextFormatter.new(SET, text, tab).format
+      text = TextFormatter.new(CTE, text, tab).format
+      text = TextFormatter.new(WHERE, text, tab).format if text.include? " WHERE "
+      text = TextFormatter.new(FROM, text, tab).format if text.include? " FROM "
+      text = TextFormatter.new(SELECT, text, tab).format if text.include? " SELECT "
+      text = TextFormatter.new(SET, text, tab).format if text.include? " SET "
+      text = TextFormatter.new(UPDATE, text, tab).format if text.include? " UPDATE "
+      text = TextFormatter.new(JOIN, text, tab).format if text.include? " JOIN "
+      text = TextFormatter.new(INSERT, text, tab).format if text.include? " INSERT "
       text
     end
 

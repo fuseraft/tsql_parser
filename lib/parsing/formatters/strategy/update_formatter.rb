@@ -23,6 +23,8 @@ module TSqlParser::Parsing::Formatters
       lines = text.split("\n")
       lines.each do |line|
         first = line.strip.split(" ").first
+        next if first.nil?
+
         if first != "UPDATE"
           formatted << line
           next
@@ -35,7 +37,7 @@ module TSqlParser::Parsing::Formatters
           formatted << line
           next
         end
-        formatted << line.sub(update, new_update)
+        formatted << "#{tab * tab_count}#{line.strip.sub(update, new_update)}"
       end
       formatted.join("\n")
     end
