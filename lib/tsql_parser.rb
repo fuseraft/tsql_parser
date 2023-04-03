@@ -15,13 +15,15 @@
 #   TSqlParser
 
 module TSqlParser
+  require_relative "parsing/config/defaults"
+
   # Formats a SQL string.
   #
   # @param sql [String] the SQL string to format.
   # @param tab_count [Integer] the number of tabs to start with.
   # @param tab [String] the tab string.
   # @return [String] the formatted SQL string.
-  def self.format(sql, tab_count = 0, tab = "    ")
+  def self.format(sql, tab_count = Parsing::Defaults.get_default_tab_count, tab = Parsing::Defaults.get_default_tab)
     require_relative "parsing/formatter"
     tokens = self.parse(sql)
     Parsing::Formatter.format(tokens, tab_count, tab)

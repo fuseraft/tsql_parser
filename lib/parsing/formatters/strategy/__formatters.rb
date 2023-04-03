@@ -10,25 +10,22 @@
 # github.com/scstauf
 #
 # path:
-#   parsing/formatter.rb
-# object:
-#   TSqlParser::Parsing::Formatter
+#   parsing/formatters/strategy/__formatters.rb
 
 module TSqlParser::Parsing
-  require_relative "strategy/__defaults"
-  require_relative "format_factory"
+  require_relative "cte_formatter"
+  require_relative "set_formatter"
+  require_relative "join_formatter"
+  require_relative "insert_formatter"
+  require_relative "select_formatter"
+  require_relative "update_formatter"
+  require_relative "where_formatter"
 
-  class TextFormatter
-    attr_writer :strategy
-
-    def initialize(strategy, text, tab = Defaults.get_default_tab)
-      @strategy = FormatFactory.get(strategy)
-      @text = text
-      @tab = tab
-    end
-
-    def format
-      @strategy.format(@text, @tab)
-    end
-  end
+  CTE = 0
+  INSERT = 1
+  JOIN = 2
+  SELECT = 3
+  SET = 4
+  UPDATE = 5
+  WHERE = 6
 end

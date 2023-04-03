@@ -18,7 +18,7 @@ module TSqlParser::Parsing::Formatters
   require_relative "base_formatter"
 
   class InsertFormatter < BaseFormatter
-    def self.format(text, tab = "    ")
+    def format(text, tab = Defaults.get_default_tab)
       formatted = []
       lines = text.split("\n")
       search = "INSERT INTO"
@@ -43,7 +43,7 @@ module TSqlParser::Parsing::Formatters
 
     private
 
-    def self.format_insert(s, tab_count = 0, tab = "    ")
+    def format_insert(s, tab_count = Defaults.get_default_tab_count, tab = Defaults.get_default_tab)
       return s if s.nil?
       formatted = []
       if s.include? ") VALUES ("

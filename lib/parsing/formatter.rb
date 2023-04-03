@@ -15,23 +15,25 @@
 #   TSqlParser::Parsing::Formatter
 
 module TSqlParser::Parsing
+  require_relative "config/defaults"
   require_relative "parser"
   require_relative "formatters/text_formatter"
   require_relative "transformers/token_transformer"
   
   class Formatter
-    def self.format(tokens, tab_count = 0, tab = "    ")
+    def self.format(tokens, tab_count = Defaults.get_default_tab_count, tab = Defaults.get_default_tab)
       lines = TokenTransformer.transform(tokens)
       lines = self.cleanup_whitespace(lines)
       lines = self.insert_indentation(lines, tab_count, tab)
-      lines = self.insert_newlines(lines)
+      #lines = self.insert_newlines(lines)
       text = lines.join("\n")
-      text = TextFormatter.format_inserts(text, tab)
-      text = TextFormatter.format_updates(text, tab)
-      text = TextFormatter.format_joins(text, tab)
-      text = TextFormatter.format_wheres(text, tab)
-      text = TextFormatter.format_selects(text, tab)
-      text = TextFormatter.format_sets(text, tab)
+      text = TextFormatter.new(JOIN, text, tab).format
+      text = TextFormatter.new(INSERT, text, tab).format
+      text = TextFormatter.new(UPDATE, text, tab).format
+      text = TextFormatter.new(WHERE, text, tab).format
+      text = TextFormatter.new(SELECT, text, tab).format
+      text = TextFormatter.new(SET, text, tab).format
+      puts text
       text
     end
 
@@ -60,7 +62,7 @@ module TSqlParser::Parsing
       new_lines
     end
 
-    def self.insert_indentation(lines, tab_count = 0, tab = "    ")
+    def self.insert_indentation(lines, tab_count = Defaults.get_default_tab_count, tab = Defaults.get_default_tab)
       indented_lines = []
       work_lines = []
       lines.each do |line|
