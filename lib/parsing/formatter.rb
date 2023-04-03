@@ -33,7 +33,6 @@ module TSqlParser::Parsing
       text = TextFormatter.new(WHERE, text, tab).format
       text = TextFormatter.new(SELECT, text, tab).format
       text = TextFormatter.new(SET, text, tab).format
-      puts text
       text
     end
 
