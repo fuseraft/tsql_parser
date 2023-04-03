@@ -15,10 +15,10 @@
 #   TSqlParser::Parsing::Formatters::SetFormatter
 
 module TSqlParser::Parsing::Formatters
-  require_relative 'base_formatter'
+  require_relative "base_formatter"
 
   class SetFormatter < BaseFormatter
-    def self.format(text, tab = "    ")
+    def format(text, tab = Defaults.get_default_tab)
       formatted = []
       lines = text.split("\n")
       wait = false
@@ -71,7 +71,7 @@ module TSqlParser::Parsing::Formatters
 
     private
 
-    def self.format_set(s, tab_count = 0, tab = "    ")
+    def format_set(s, tab_count = Defaults.get_default_tab_count, tab = Defaults.get_default_tab)
       return s if s.nil?
       parts = []
       builder = ""

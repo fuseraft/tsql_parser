@@ -18,7 +18,7 @@ module TSqlParser::Parsing::Formatters
   require_relative "base_formatter"
 
   class WhereFormatter < BaseFormatter
-    def self.format(text, tab = "   ")
+    def format(text, tab = Defaults.get_default_tab)
       formatted = []
       text.split("\n").each do |line|
         first = line.strip.split(" ").first
@@ -42,7 +42,7 @@ module TSqlParser::Parsing::Formatters
 
     private
 
-    def self.format_predicate(s, tab_count = 0, tab = "    ")
+    def format_predicate(s, tab_count = Defaults.get_default_tab_count, tab = Defaults.get_default_tab)
       return s if s.nil?
       indented = []
       formatted = []
