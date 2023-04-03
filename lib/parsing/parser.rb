@@ -86,8 +86,8 @@ module TSqlParser::Parsing
       s == "]"
     end
 
-    def self.is_string_mark?(s)
-      s == "'"
+    def self.is_string?(s)
+      s.start_with? "'" and s.end_with? "'"
     end
 
     def self.is_comma?(s)

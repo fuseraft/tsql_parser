@@ -37,7 +37,10 @@ module TSqlParser::Parsing
         end
 
         next_token = tokens[index + 1]
-        if Parser.is_new_node_keyword? t[:value]
+
+        if t[:string]
+          container.add t unless container.nil?
+        elsif Parser.is_new_node_keyword? t[:value]
           if not next_token.nil? and Parser.is_new_node_keyword? next_token[:value]
             if Parser.is_new_node_composite?(t[:value], next_token[:value])
               containers << container unless container.nil?
