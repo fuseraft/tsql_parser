@@ -10,25 +10,7 @@
 # github.com/scstauf
 #
 # path:
-#   parsing/formatter.rb
-# object:
-#   TSqlParser::Parsing::Formatter
+#   parsing/formatters/strategy/__defaults.rb
 
-module TSqlParser::Parsing
-  require_relative "strategy/__defaults"
-  require_relative "format_factory"
-
-  class TextFormatter
-    attr_writer :strategy
-
-    def initialize(strategy, text, tab = Defaults.get_default_tab)
-      @strategy = FormatFactory.get(strategy)
-      @text = text
-      @tab = tab
-    end
-
-    def format
-      @strategy.format(@text, @tab)
-    end
-  end
-end
+require_relative "../../config/defaults"
+Defaults = TSqlParser::Parsing::Defaults

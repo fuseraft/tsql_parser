@@ -18,9 +18,11 @@ module TSqlParser::Parsing::Formatters
   require_relative "base_formatter"
 
   class JoinFormatter < BaseFormatter
-    def self.format(text, tab = "    ")
+    def format(text, tab = Defaults.get_default_tab)
       text = text.gsub(/INNER\s+JOIN/, "INNER JOIN")
                  .gsub(/LEFT\s+JOIN/, "LEFT JOIN")
+                 .gsub(/RIGHT\s+JOIN/, "RIGHT JOIN")
+                 .gsub(/CROSS\s+JOIN/, "CROSS JOIN")
       lines = text.split("\n")
       new_text = []
 

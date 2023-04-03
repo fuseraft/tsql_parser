@@ -15,20 +15,10 @@
 #   TSqlParser::Parsing::Tokenizer
 
 module TSqlParser::Parsing
+  require_relative "config/defaults"
   require_relative "transformers/token_categorizer"
 
   class Tokenizer
-    @@default_char_delimiters = ["(", ",", ")", "=", "+", "-", "%", "/", "*", "<", "!", ">", "'", "[", "]", ";"]
-    @@default_skip_delimiters = [" ", "\n", "\t"]
-
-    def self.set_default_char_delimiters(char_delimiters = [])
-      @@default_char_delimiters = char_delimiters
-    end
-
-    def self.set_default_skip_delimiters(skip_delimiters = [])
-      @@default_skip_delimiters = skip_delimiters
-    end
-
     def self.tokenize(tsql_string)
       Tokenizer.new.basic_tokenize(tsql_string).map { |t| TokenCategorizer.categorize(t) }
     end
@@ -181,8 +171,8 @@ module TSqlParser::Parsing
       @string = false
       @string_count = 0
       @skip_count = 0
-      @char_delimiters = @@default_char_delimiters
-      @skip_delimiters = @@default_skip_delimiters
+      @char_delimiters = Defaults.get_default_single_char_tokens
+      @skip_delimiters = Defaults.get_default_delimiters
       @delimiters = ([] << @char_delimiters << @skip_delimiters).flatten.uniq
       @builder = ""
     end

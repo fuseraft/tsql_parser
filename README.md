@@ -26,7 +26,7 @@ require "tsql_parser"
 file = File.expand_path("~/path/to/tsql_script.sql")
 tsql = File.read(file)
 
-puts TSqlParser.format(tsql, 0)
+puts TSqlParser.format(tsql)
 ```
 
 # TSqlParser
@@ -45,32 +45,40 @@ This is the facade for working with the library.
 
 # TSqlParser::Parsing::Tokenizer
 
-I'm still building out the configurability of the tokenization, parsing, and formatter.
-
 ## Tokenizer Methods
 
 ### `Tokenizer#tokenize(tsql_string) → hash_array`
 
 - Tokenizes a T-SQL string into a hash array of tokens.
 
-### `Tokenizer#set_default_char_delimiters(delim_array=[])`
+# Configuration
+
+I'm still building out the configurability of the tokenization, parsing, and formatter.
+
+### `Defaults#set_default_tab_count(tab_count = 0)`
+
+- Sets the default tab count to use during formatting.
+
+### `Defaults#set_default_tab(tab = "    ")`
+
+- Sets the default tab string to use during formatting.
+
+### `Defaults#set_default_single_char_tokens(delim_array=[])`
 
 - Sets the list of recognized character tokens.
 
 #### Example
 ```ruby
-TSqlParser::Parsing::Tokenizer.set_default_char_delimiters [] 
-# Default: "(", ",", ")", "=", "+", "-", "%", "/", "*", "<", "!", ">", "'", "[", "]", ";"]
+TSqlParser::Parsing::Defaults.set_default_single_char_tokens ["(", ",", ")", "=", "+", "-", "%", "/", "*", "<", "!", ">", "'", "[", "]", ";"]
 ```
 
-### `Tokenizer#set_default_skip_delimiters(delim_array=[])`
+### `Defaults#set_default_delimiters(delim_array=[])`
 
 * Sets the list of token-separators.
 
 #### Example
 ```ruby
-TSqlParser::Parsing::Tokenizer.set_default_skip_delimiters [] 
-# Default: [" ", "\n", "\t"]
+TSqlParser::Parsing::Defaults.set_default_delimiters [" ", "\n", "\t"]
 ```
 
 ## Contributions

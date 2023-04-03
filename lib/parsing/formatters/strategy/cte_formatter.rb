@@ -10,25 +10,16 @@
 # github.com/scstauf
 #
 # path:
-#   parsing/formatter.rb
+#   parsing/formatters/cte_formatter.rb
 # object:
-#   TSqlParser::Parsing::Formatter
+#   TSqlParser::Parsing::Formatters::CommonTableExpressionFormatter
 
-module TSqlParser::Parsing
-  require_relative "strategy/__defaults"
-  require_relative "format_factory"
+module TSqlParser::Parsing::Formatters
+    require_relative "base_formatter"
 
-  class TextFormatter
-    attr_writer :strategy
-
-    def initialize(strategy, text, tab = Defaults.get_default_tab)
-      @strategy = FormatFactory.get(strategy)
-      @text = text
-      @tab = tab
-    end
-
-    def format
-      @strategy.format(@text, @tab)
+    class CommonTableExpressionFormatter < BaseFormatter
+      def format(text, tab = Defaults.get_default_tab)
+      end
     end
   end
-end
+  
