@@ -26,7 +26,7 @@ module TSqlParser::Parsing::Formatters
 
       lines.each do |line|
         first = line.strip.split(" ").first
-        if line.include? " WHERE " and first != "WHERE" and not first.start_with? "--" and not first.start_with? "/*"
+        if line.include? " WHERE " and first != "WHERE" and not first.start_with? "--" and not first.start_with? "/*" and not line.strip.end_with? "'"
           tab_count = self.get_tab_count(line, tab)
           where_parts = line.strip.split(" WHERE ")
           where_text = []

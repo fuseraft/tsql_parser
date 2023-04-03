@@ -15,137 +15,176 @@
 #   TSqlParser::Parsing::Tokenizer
 
 module TSqlParser::Parsing
-  require_relative "parser"
+  require_relative "transformers/token_categorizer"
 
   class Tokenizer
+    @@default_char_delimiters = ["(", ",", ")", "=", "+", "-", "%", "/", "*", "<", "!", ">", "'", "[", "]", ";"]
+    @@default_skip_delimiters = [" ", "\n", "\t"]
+
+    def self.set_default_char_delimiters(char_delimiters = [])
+      @@default_char_delimiters = char_delimiters
+    end
+
+    def self.set_default_skip_delimiters(skip_delimiters = [])
+      @@default_skip_delimiters = skip_delimiters
+    end
+
     def self.tokenize(tsql_string)
-      tokens = basic_tokenize(
-        tsql_string,
-        ["(", ",", ")", "=", "+", "-", "%", "/", "*", "<", "!", ">", "'", "[", "]", ";"],
-        [" ", "\n", "\t"]
-      )
-      tokens.map do |t|
-        categorize(t)
-      end
+      Tokenizer.new.basic_tokenize(tsql_string).map { |t| TokenCategorizer.categorize(t) }
     end
 
-    def self.categorize(s)
-      data = {}
-      data[:value] = s
-      data[:keyword] = true if Parser.is_keyword? s
-      data[:operator] = true if Parser.is_operator? s
-      data[:function] = true if Parser.is_function? s
-      data[:type] = true if Parser.is_type? s
-      data[:comment] = true if Parser.is_comment? s
-      data[:numeric] = true if Parser.is_numeric? s
-      data[:special_variable] = true if Parser.is_special_variable? s
-      data[:variable] = true if Parser.is_variable? s
-      data[:temporary_table] = true if Parser.is_temp_table? s
-      data[:label] = true if Parser.is_label? s
-      data[:parenthesis] = true if Parser.is_parenthesis? s
-      data[:open_parenthesis] = true if Parser.is_open_parenthesis? s
-      data[:close_parenthesis] = true if Parser.is_close_parenthesis? s
-      data[:bracket] = true if Parser.is_bracket? s
-      data[:open_bracket] = true if Parser.is_open_bracket? s
-      data[:close_bracket] = true if Parser.is_close_bracket? s
-      data[:string_mark] = true if Parser.is_string_mark? s
-      data[:comma] = true if Parser.is_comma? s
-      data[:join] = true if Parser.is_join? s
-      data[:join_type] = true if Parser.is_join_type? s
-      data[:begin] = true if Parser.is_begin? s
-      data[:end] = true if Parser.is_end? s
-      data[:terminator] = true if Parser.is_terminator? s
-      data[:value] = data[:value].upcase if data[:keyword] or data[:function] or data[:type]
-      data[:needs_newline] = true if data[:keyword] and Parser.is_newline_required? s
-      data
-    end
-
-    def self.basic_tokenize(tsql_string, char_delimiters, skip_delimiters)
-      specific_tokens = []
-      delimiters = ([] << char_delimiters << skip_delimiters).flatten
-      builder = ""
+    def basic_tokenize(tsql_string)
+      self.reset
       tsql_chars = tsql_string.split("")
-      multiline_comment = false
-      comment = false
-      string = false
-      string_count = 0
-      skip_count = 0
+
       tsql_chars.each_with_index do |c, i|
-        if skip_count > 0
-          skip_count -= 1
+        if @skip_count > 0
+          @skip_count -= 1
           next
         end
 
-        next_c = tsql_chars[i + 1] unless i + 1 > tsql_chars.size
+        # get last and next char
+        @c = c
+        @last_c = tsql_chars[i - 1] unless i - 1 < 0
+        @next_c = tsql_chars[i + 1] unless i + 1 > tsql_chars.size
 
-        if Parser.is_multiline_comment_start?(c, next_c)
-          multiline_comment = true
-          specific_tokens << builder unless builder.empty?
-          builder = c
-          next
+        # if we aren't in a string.
+        unless @string
+          next if self.handle_multicomment_start
+          next if self.handle_multicomment_end
+          next if self.handle_singlecomment_start
+          next if self.build_comment
         end
 
-        if Parser.is_multiline_comment_end?(c, next_c)
-          skip_count = 1
-          multiline_comment = false
-          builder << c << next_c
-          specific_tokens << builder unless builder.empty?
-          builder = ""
-          next
+        unless @multiline_comment or @comment
+          next if self.handle_string_char
+          next if self.handle_two_char_op
+          next if self.handle_delimiter
         end
 
-        if Parser.is_comment_start?(c, next_c) and not comment
-          comment = true
-          skip_count = 1
-          specific_tokens << builder unless builder.empty?
-          builder = "--"
-          next
-        end
-
-        if comment and c != "\n"
-          builder << c
-          next
-        elsif comment and c == "\n"
-          specific_tokens << builder unless builder.empty?
-          builder = ""
-          comment = false
-          next
-        end
-
-        if c == "'" and not multiline_comment and not comment
-          if not string
-            string = true
-            specific_tokens << builder unless builder.empty?
-            builder = c
-            next
-          else
-            string = false
-            builder << c
-            specific_tokens << builder unless builder.empty?
-            builder = ""
-            next
-          end
-        end
-
-        if Parser.is_two_char_op?(c, next_c)
-          skip_count = 1
-          specific_tokens << builder unless builder.empty?
-          specific_tokens << "#{c}#{next_c}"
-          builder = ""
-          next
-        end
-
-        if delimiters.include? c and !multiline_comment and !string and !comment
-          specific_tokens << builder unless builder.empty?
-          specific_tokens << c unless skip_delimiters.include? c
-          builder = ""
-          next
-        end
-
-        builder << c
+        self.build
       end
-      specific_tokens << builder unless builder.empty?
-      specific_tokens
+
+      self.flush_builder
+      @tokens
+    end
+
+    private
+
+    def handle_multicomment_start
+      if Parser.is_multiline_comment_start?(@c, @next_c)
+        @multiline_comment = true
+        self.flush_builder(c)
+        return true
+      end
+    end
+
+    def handle_multicomment_end
+      if Parser.is_multiline_comment_end?(@c, @next_c)
+        @skip_count = 1
+        @multiline_comment = false
+        self.build
+        self.build(@next_c)
+        self.flush_builder("")
+        return true
+      end
+    end
+
+    def handle_singlecomment_start
+      if Parser.is_comment_start?(@c, @next_c) and not @comment
+        @comment = true
+        @skip_count = 1
+        self.flush_builder("--")
+        return true
+      end
+    end
+
+    def handle_singlecomment_end
+      if @c == "\n"
+        self.flush_builder("")
+        @comment = false
+        return true
+      end
+    end
+
+    def handle_string_char
+      if @c == "'"
+        @string_count += 1
+        return true if self.handle_string_start
+        @string_count += 1 if @next_c == "'"
+        return true if self.handle_string_end
+      end
+    end
+
+    def handle_string_start
+      if not @string
+        @string = true
+        self.flush_builder(@c)
+        return true
+      end
+    end
+
+    def handle_string_end
+      if @string_count % 2 == 0
+        @string = false
+        @string_count = 0
+        self.build
+        self.flush_builder("")
+        return true
+      end
+    end
+
+    def handle_two_char_op
+      if Parser.is_two_char_op?(@c, @next_c)
+        @skip_count = 1
+        self.flush_builder("")
+        @tokens << "#{@c}#{@next_c}"
+        return true
+      end
+    end
+
+    def handle_delimiter
+      if @delimiters.include? @c and !@multiline_comment and !@comment and !@string
+        self.flush_builder("")
+        @tokens << @c unless @skip_delimiters.include? @c
+        return true
+      end
+    end
+
+    def build(value = nil)
+      @builder << @c if value.nil?
+      @builder << value unless value.nil?
+    end
+
+    def build_comment
+      if @comment
+        return true if self.handle_singlecomment_end
+
+        self.build
+        return true
+      end
+    end
+
+    def flush_builder(value = nil)
+      @tokens << @builder unless @builder.empty?
+      @builder = value
+    end
+
+    def initialize
+      self.reset
+    end
+
+    def reset
+      @tokens = []
+      @multiline_comment = false
+      @comment = false
+      @string = false
+      @string_count = 0
+      @skip_count = 0
+      @char_delimiters = @@default_char_delimiters
+      @skip_delimiters = @@default_skip_delimiters
+      @delimiters = ([] << @char_delimiters << @skip_delimiters).flatten.uniq
+      @builder = ""
     end
   end
 end
