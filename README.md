@@ -73,8 +73,8 @@ I'm still building out the configurability of the tokenization, parsing, and for
 
 - Sets the list of recognized character tokens.
 
-**Example**
 ```ruby
+# Example
 TSqlParser::Parsing::Defaults.set_default_single_char_tokens ["(", ",", ")", "=", "+", "-", "%", "/", "*", "<", "!", ">", "'", "[", "]", ";"]
 ```
 
@@ -82,8 +82,8 @@ TSqlParser::Parsing::Defaults.set_default_single_char_tokens ["(", ",", ")", "="
 
 * Sets the list of token-separators.
 
-**Example**
 ```ruby
+# Example
 TSqlParser::Parsing::Defaults.set_default_delimiters [" ", "\n", "\t"]
 ```
 
