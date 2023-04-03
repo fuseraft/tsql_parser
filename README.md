@@ -14,7 +14,7 @@ $ gem install tsql_parser
 
 ```ruby
 source "https://rubygems.org"
-gem "tsql_parser", "~> 0.1.6"
+gem "tsql_parser", "~> 0.1.7"
 ```
 
 # Example Usage
